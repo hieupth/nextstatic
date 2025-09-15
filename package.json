@@ -1,0 +1,55 @@
+{
+  "name": "nextstatic",
+  "version": "0.0.1",
+  "description": "Comprehensive toolkit for Next.js path management in static exports.",
+  "homepage": "https://github.com/hieupth/nextstatic#readme",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "default": "./dist/components/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "bugs": {
+    "url": "https://github.com/hieupth/nextstatic/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hieupth/nextstatic.git"
+  },
+  "license": "AGPL-3.0, Commercial license required",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Hieu Pham",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "prepack": "rm -rf dist && tsc -p tsconfig.build.json",
+    "prepare": "rm -rf dist && tsc -p tsconfig.build.json"
+  },
+  "peerDependencies": {
+    "next": "^15.5.3",
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "next": "^15.5.3",
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0",
+    "@types/react": "^18.2.0 || ^19.0.0",
+    "@types/react-dom": "^18.2.0 || ^19.0.0",
+    "typescript": "^5",
+    "@types/node": "^24"
+  }
+}
