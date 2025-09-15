@@ -1,8 +1,6 @@
 "use client";
-
 import NextImage from "next/image";
 import type { ComponentProps } from "react";
-import type { StaticImport } from "next/dist/shared/lib/get-img-props";
 import { getPrefixPath } from "../utils/basepath";
 
 
@@ -14,7 +12,7 @@ import { getPrefixPath } from "../utils/basepath";
  * @param src - Image source URL or StaticImport.
  * @returns Processed source with basePath applied if applicable.
  */
-function withBase(src: string | StaticImport): string | StaticImport {
+function withBase(src: string | any): string {
   if (typeof src !== "string") return src;
   if (/^(https?:\/\/|data:|blob:)/i.test(src)) return src;
   return getPrefixPath(src);

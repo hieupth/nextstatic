@@ -1,7 +1,6 @@
 "use client";
-import { getPrefixPath } from "../utils/basepath";
 import { useRouter as useNextRouter, usePathname as useNextPathname } from "next/navigation";
-import type { NavigateOptions } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { getPrefixPath } from "../utils/basepath";
 
 /**
  * Enhanced router hook that automatically handles basePath for navigation methods.
@@ -14,10 +13,10 @@ export function useRouter() {
     ...router,
     /**
      * Navigate to a route with automatic basePath handling.
-     * @param href - Route to navigate to (string or UrlObject).
+     * @param href - Route to navigate to (string or URL).
      * @param options - Navigation options.
      */
-    push: (href: string | URL, options?: NavigateOptions) => {
+    push: (href: string | URL, options?: any) => {
       const processedHref = typeof href === "string" 
         ? getPrefixPath(href) 
         : href.toString();
@@ -29,7 +28,7 @@ export function useRouter() {
      * @param href - Route to replace with (string or URL).
      * @param options - Navigation options.
      */
-    replace: (href: string | URL, options?: NavigateOptions) => {
+    replace: (href: string | URL, options?: any) => {
       const processedHref = typeof href === "string" 
         ? getPrefixPath(href) 
         : href.toString();
@@ -41,7 +40,7 @@ export function useRouter() {
      * @param href - Route to prefetch (string or URL).
      * @param options - Prefetch options.
      */
-    prefetch: (href: string | URL, options?: NavigateOptions) => {
+    prefetch: (href: string | URL, options?: any) => {
       const processedHref = typeof href === "string" 
         ? getPrefixPath(href) 
         : href.toString();
