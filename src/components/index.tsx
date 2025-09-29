@@ -1,6 +1,6 @@
 // Component wrappers
 export { default as Image } from "./Image";
-export { default as Link } from "./Link"; 
+export { default as Link } from "./Link";
 export { default as Script } from "./Script";
 export { default as Anchor } from "./Anchor";
 export { default as Audio } from "./Audio";

@@ -1,48 +1,62 @@
 "use client";
 import { useRouter as useNextRouter, usePathname as useNextPathname } from "next/navigation";
-import { getPrefixPath } from "../utils/basepath";
+import { getPrefixPath, getLocalePath } from "../utils/basepath";
+import { useLocale } from "./useLocale";
 
 /**
- * Enhanced router hook that automatically handles basePath for navigation methods.
- * Wraps Next.js useRouter to ensure all navigation works correctly with sub-path hosting.
+ * Enhanced router with automatic basePath and locale handling.
+ * Wraps Next.js useRouter for seamless internationalized routing.
+ *
+ * Features:
+ * - Automatic basePath prefixing
+ * - Automatic locale prefixing
+ * - Full Next.js compatibility
+ * - Support for string and URL navigation
+ *
+ * @returns {object} Enhanced router object.
  */
 export function useRouter() {
   const router = useNextRouter();
+  const { locale } = useLocale();
 
   return {
     ...router,
+
     /**
-     * Navigate to a route with automatic basePath handling.
-     * @param href - Route to navigate to (string or URL).
-     * @param options - Navigation options.
+     * Navigate with automatic basePath and locale prefixing.
+     * @param {string | URL} href - Destination route or URL.
+     * @param {any} [options] - Navigation options.
+     * @returns {Promise<boolean>} Navigation success promise.
      */
     push: (href: string | URL, options?: any) => {
-      const processedHref = typeof href === "string" 
-        ? getPrefixPath(href) 
+      const processedHref = typeof href === "string"
+        ? getLocalePath(href, locale)
         : href.toString();
       return router.push(processedHref, options);
     },
-    
+
     /**
-     * Replace current route with automatic basePath handling.
-     * @param href - Route to replace with (string or URL).
-     * @param options - Navigation options.
+     * Replace current route with automatic path handling.
+     * @param {string | URL} href - Destination route or URL.
+     * @param {any} [options] - Navigation options.
+     * @returns {Promise<boolean>} Replacement success promise.
      */
     replace: (href: string | URL, options?: any) => {
-      const processedHref = typeof href === "string" 
-        ? getPrefixPath(href) 
+      const processedHref = typeof href === "string"
+        ? getLocalePath(href, locale)
         : href.toString();
       return router.replace(processedHref, options);
     },
-    
+
     /**
-     * Prefetch a route with automatic basePath handling.
-     * @param href - Route to prefetch (string or URL).
-     * @param options - Prefetch options.
+     * Prefetch route with automatic path handling.
+     * @param {string | URL} href - Route to prefetch.
+     * @param {any} [options] - Prefetch options.
+     * @returns {Promise<void>} Prefetch completion promise.
      */
     prefetch: (href: string | URL, options?: any) => {
-      const processedHref = typeof href === "string" 
-        ? getPrefixPath(href) 
+      const processedHref = typeof href === "string"
+        ? getLocalePath(href, locale)
         : href.toString();
       return router.prefetch(processedHref, options);
     }
@@ -50,12 +64,12 @@ export function useRouter() {
 }
 
 /**
- * Enhanced pathname hook that returns the pathname without basePath for cleaner routing logic.
- * Removes basePath prefix from the current pathname to get the app-relative path.
+ * Enhanced pathname hook returning path without basePath prefix.
+ * Provides clean application-relative path for routing logic.
+ *
+ * @returns {string} Current pathname without basePath prefix.
  */
 export function usePathname(): string {
   const pathname = useNextPathname();
-  // Note: Next.js App Router automatically handles basePath removal in usePathname
-  // This wrapper is for consistency and future extensibility
   return pathname;
 }
