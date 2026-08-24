@@ -1,7 +1,7 @@
 "use client";
 import NextLink from "next/link";
 import type { ComponentProps } from "react";
-import { getPrefixPath, getPrefixUrlObject, getLocalePath } from "../utils/basepath";
+import { getLocaleRoute } from "../utils/basepath";
 import { useLocale } from "../hooks/useLocale";
 
 // Props extending NextLink for type safety
@@ -13,14 +13,18 @@ type Props = ComponentProps<typeof NextLink>;
  * @param {string} locale - Current locale.
  * @returns {Props["href"]} Processed href.
  */
+// Locale-segment only: Next's Link applies basePath itself, so prefixing
+// it here would double it (BASE_PATH was baked twice before this fix).
 function withBase(href: Props["href"], locale: string): Props["href"] {
   if (typeof href === "string") {
     if (/^(https?:\/\/|mailto:|tel:|#)/i.test(href)) return href;
-    return getLocalePath(href, locale);
+    return getLocaleRoute(href, locale);
   }
 
-  if (typeof href === "object" && href !== null) {
-    return getPrefixUrlObject(href);
+  if (typeof href === "object" && href !== null && typeof href.pathname === "string") {
+    if (locale && href.pathname.startsWith("/") && !href.pathname.startsWith("/_next/")) {
+      return { ...href, pathname: getLocaleRoute(href.pathname, locale) };
+    }
   }
 
   return href;

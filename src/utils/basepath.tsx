@@ -127,6 +127,24 @@ export function parseLocaleFromPath(path: string, availableLocales: string[] = [
  * @param {string} locale - Locale code.
  * @returns {string} Complete path with basePath and locale.
  */
+/**
+ * Locale-prefix a route path WITHOUT the basePath — for hrefs handed to
+ * Next primitives (next/link, router.push): Next applies basePath itself,
+ * so including it here would double the prefix.
+ * @param path - Route path (e.g. "/about"). External/anchor/_next paths pass through.
+ * @param locale - Locale segment (e.g. "vi"). Empty string returns the path unchanged.
+ * @returns Path with locale segment only (e.g. "/vi/about").
+ */
+export function getLocaleRoute(path: string, locale: string): string {
+  if (!path || typeof path !== 'string') return '';
+  if (!path.startsWith("/") || path.startsWith("/_next/") || PROTOCOL_RELATIVE_REGEX.test(path) || ABSOLUTE_URL_REGEX.test(path)) {
+    return path;
+  }
+  if (!locale) return path;
+  const cleanPath = path.replace(/^\/+/, "");
+  return `/${locale}/${cleanPath}`.replace(/\/{2,}/g, "/");
+}
+
 export function getLocalePath(path: string | null | undefined, locale: string): string {
   if (!path || typeof path !== 'string') return '';
 

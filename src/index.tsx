@@ -7,6 +7,7 @@ export {
   resetPathCache,
   parseLocaleFromPath,
   getLocalePath,
+  getLocaleRoute,
   getCurrentLocale,
 } from "./utils/basepath";
 

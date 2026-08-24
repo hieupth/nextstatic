@@ -11,9 +11,6 @@ interface LocaleContextType {
   availableLocales: Locale[];
 }
 
-// React context for internationalization
-const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
-
 // LocaleProvider props
 interface LocaleProviderProps {
   children: React.ReactNode;
@@ -23,6 +20,14 @@ interface LocaleProviderProps {
 
 /**
  * Provider for internationalization with URL detection and localStorage persistence.
+ *
+ * Static-first (recommended — zero flicker): with locale-in-route
+ * (`app/[locale]/...` + generateStaticParams) pass the route param in —
+ * `defaultLocale={params.locale}` — so prerendered HTML already carries the
+ * right locale and every Link prefix is correct in the frozen output.
+ * Dynamic single-tree apps fall back to client-side URL detection in the
+ * mount effect (brief default-locale first paint before correction).
+ *
  * @param {LocaleProviderProps} props - Configuration props.
  * @returns {React.ReactElement} Context provider.
  */
@@ -78,15 +83,34 @@ export function LocaleProvider({
   );
 }
 
+// Default context consumed when no LocaleProvider is mounted. An empty
+// locale means "no locale prefixing": Link degrades to a basePath-only
+// Link — the behavior a single-locale static site expects — instead of
+// crashing at prerender. setLocale outside a provider is a programming
+// error surface: warn once, keep the no-op honest.
+const disconnectedWarning = { warned: false };
+const DEFAULT_LOCALE_CONTEXT: LocaleContextType = {
+  locale: "",
+  setLocale: () => {
+    if (!disconnectedWarning.warned) {
+      disconnectedWarning.warned = true;
+      console.warn(
+        "[nextstatic] useLocale().setLocale was called without a LocaleProvider — the update is ignored. Wrap the tree in <LocaleProvider> to manage locale."
+      );
+    }
+  },
+  availableLocales: [],
+};
+
+const LocaleContext = createContext<LocaleContextType>(DEFAULT_LOCALE_CONTEXT);
+
 /**
  * Hook for accessing locale context in components.
+ * Without a LocaleProvider it returns a safe default: locale "" (Link
+ * prefixes basePath only), no-op setLocale (warns once), empty
+ * availableLocales.
  * @returns {LocaleContextType} Locale context.
- * @throws {Error} If used outside LocaleProvider.
  */
 export function useLocale() {
-  const context = useContext(LocaleContext);
-  if (context === undefined) {
-    throw new Error("useLocale must be used within a LocaleProvider");
-  }
-  return context;
+  return useContext(LocaleContext);
 }

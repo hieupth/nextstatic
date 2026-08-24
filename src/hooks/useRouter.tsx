@@ -1,6 +1,6 @@
 "use client";
 import { useRouter as useNextRouter, usePathname as useNextPathname } from "next/navigation";
-import { getPrefixPath, getLocalePath } from "../utils/basepath";
+import { getLocaleRoute } from "../utils/basepath";
 import { useLocale } from "./useLocale";
 
 /**
@@ -30,7 +30,7 @@ export function useRouter() {
      */
     push: (href: string | URL, options?: any) => {
       const processedHref = typeof href === "string"
-        ? getLocalePath(href, locale)
+        ? getLocaleRoute(href, locale)
         : href.toString();
       return router.push(processedHref, options);
     },
@@ -43,7 +43,7 @@ export function useRouter() {
      */
     replace: (href: string | URL, options?: any) => {
       const processedHref = typeof href === "string"
-        ? getLocalePath(href, locale)
+        ? getLocaleRoute(href, locale)
         : href.toString();
       return router.replace(processedHref, options);
     },
@@ -56,7 +56,7 @@ export function useRouter() {
      */
     prefetch: (href: string | URL, options?: any) => {
       const processedHref = typeof href === "string"
-        ? getLocalePath(href, locale)
+        ? getLocaleRoute(href, locale)
         : href.toString();
       return router.prefetch(processedHref, options);
     }
