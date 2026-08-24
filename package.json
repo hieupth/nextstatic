@@ -36,7 +36,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -rf dist && tsc -p tsconfig.build.json",
     "prepack": "rm -rf dist && tsc -p tsconfig.build.json",
-    "prepare": "rm -rf dist && tsc -p tsconfig.build.json"
+    "prepare": "rm -rf dist && tsc -p tsconfig.build.json",
+    "smoke": "npx --yes esbuild --bundle dist/index.js --outfile=/dev/null --external:react --external:react-dom --external:next --external:next/* && npx --yes esbuild --bundle dist/components/index.js --outfile=/dev/null --external:react --external:react-dom --external:next --external:next/*"
   },
   "peerDependencies": {
     "next": "^15.5.3",
