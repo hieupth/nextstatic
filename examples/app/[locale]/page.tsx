@@ -26,7 +26,7 @@ export default async function LocalePage({
           are correct in the static HTML itself.
         </p>
         <ul>
-          <li><Link href="/about">About — prefixed /{locale}/about</Link></li>
+          <li><Link href="/">Home (locale-prefixed)</Link></li>
           <li>
             <a href={getLocalePath("/about", locale === "en" ? "vi" : "en")}>
               Switch to {locale === "en" ? "vi" : "en"} (plain util, no client state)

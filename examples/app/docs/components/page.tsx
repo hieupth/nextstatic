@@ -47,10 +47,10 @@ export default function ComponentsDocs() {
       <h2>Media: Video / Audio / Iframe / Source</h2>
       <pre>{`<Video src="…" controls />
 <Audio src="…" controls />
-<Iframe src="…" width={480} height={180} />`}</pre>
+<Iframe src="…" className="resp-embed" />`}</pre>
       <p><Video src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" controls width={480} /></p>
       <p><Audio src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3" controls /></p>
-      <Iframe src="https://example.com/embed" width={480} height={180} title="embed" />
+      <Iframe src="/embed.html" className="resp-embed" title="embed" />
 
       <h2>Form</h2>
       <pre>{`<Form action="https://example.com/search"> … </Form>`}</pre>

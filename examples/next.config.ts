@@ -10,6 +10,13 @@ const nextConfig: NextConfig = {
   basePath,
   assetPrefix: basePath,
   images: { unoptimized: true },
+  // Inline BASE_PATH into the client bundle — without this the lib's
+  // process.env.BASE_PATH is undefined on the client and hydration
+  // mismatches the prerendered (prefixed) HTML.
+  env: {
+    BASE_PATH: basePath,
+    NEXT_PUBLIC_BASE_PATH: basePath,
+  },
 };
 
 export default nextConfig;
