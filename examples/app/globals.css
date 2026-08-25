@@ -2,3 +2,12 @@
 body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; line-height: 1.6; }
 section { margin: 2rem 0; }
 .hero { min-height: 120px; border-radius: 12px; display: grid; place-items: center; color: #fff; }
+.docs { display: flex; gap: 2rem; }
+.docs-nav { display: flex; flex-direction: column; gap: .5rem; min-width: 140px; }
+.docs-nav a { text-decoration: none; }
+.docs-nav a:hover { text-decoration: underline; }
+.docs-main { flex: 1; max-width: 640px; }
+.docs-main table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+.docs-main th, .docs-main td { border: 1px solid #8884; padding: .35rem .6rem; text-align: left; font-size: .9rem; }
+.docs-main code { background: #8882; padding: .1rem .3rem; border-radius: 4px; }
+pre { background: #111; color: #eee; padding: 1rem; border-radius: 8px; overflow-x: auto; }
