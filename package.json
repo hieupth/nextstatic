@@ -2,7 +2,7 @@
   "name": "@hieupth/nextstatic",
   "version": "0.0.1",
   "description": "Comprehensive toolkit for Next.js path management in static exports.",
-  "homepage": "https://github.com/hieupth/nextstatic#readme",
+  "homepage": "https://github.com/hieupth/next-static-path#readme",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -11,7 +11,8 @@
     "./components": {
       "types": "./dist/components/index.d.ts",
       "default": "./dist/components/index.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -20,11 +21,11 @@
     "dist"
   ],
   "bugs": {
-    "url": "https://github.com/hieupth/nextstatic/issues"
+    "url": "https://github.com/hieupth/next-static-path/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hieupth/nextstatic.git"
+    "url": "git+https://github.com/hieupth/next-static-path.git"
   },
   "license": "AGPL-3.0, Commercial license required",
   "publishConfig": {
@@ -40,17 +41,23 @@
     "smoke": "npx --yes esbuild --bundle dist/index.js --outfile=/dev/null --external:react --external:react-dom --external:next --external:next/* && npx --yes esbuild --bundle dist/components/index.js --outfile=/dev/null --external:react --external:react-dom --external:next --external:next/*"
   },
   "peerDependencies": {
-    "next": "^15.5.3",
+    "next": "latest",
     "react": "^18.2.0 || ^19.0.0",
     "react-dom": "^18.2.0 || ^19.0.0"
   },
   "devDependencies": {
-    "next": "^15.5.3",
-    "react": "^18.2.0 || ^19.0.0",
-    "react-dom": "^18.2.0 || ^19.0.0",
+    "@types/node": "^24",
     "@types/react": "^18.2.0 || ^19.0.0",
     "@types/react-dom": "^18.2.0 || ^19.0.0",
-    "typescript": "^5",
-    "@types/node": "^24"
+    "next": "latest",
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0",
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "next": "latest"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

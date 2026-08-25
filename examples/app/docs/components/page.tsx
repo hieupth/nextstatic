@@ -53,9 +53,9 @@ export default function ComponentsDocs() {
       <Iframe src="/embed.html" className="resp-embed" title="embed" />
 
       <h2>Form</h2>
-      <pre>{`<Form action="https://example.com/search"> … </Form>`}</pre>
-      <Form action="https://example.com/search">
-        <input name="q" placeholder="action carries the prefix" />
+      <pre>{`<Form action="/search"> … </Form>`}</pre>
+      <Form action="/search">
+        <input name="q" placeholder="action → /demo/search (prefixed)" />
         <button type="submit">Search</button>
       </Form>
       <p><code>Source</code> follows the same pattern inside picture/video elements.</p>

@@ -1,5 +1,5 @@
 :root { color-scheme: light dark; }
-body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; line-height: 1.6; }
+body { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; line-height: 1.6; }
 section { margin: 2rem 0; }
 .hero { min-height: 120px; border-radius: 12px; display: grid; place-items: center; color: #fff; }
 .docs { display: flex; gap: 2rem; }
@@ -21,3 +21,6 @@ body { overflow-x: hidden; }
 
 video, iframe { max-width: 100%; border-radius: 8px; }
 .resp-embed { width: 100%; max-width: 480px; height: 180px; border: none; }
+
+nav { overflow-wrap: anywhere; }
+body { overflow-x: hidden; }

@@ -1,21 +1,63 @@
-name: Release
+# Publish to npm when a version tag is pushed.
+# Builds the tarball, deploys preview from it, then publishes behind
+# the protected `npm` environment (OIDC — no token secret needed).
+
+name: Publish
 
 on:
   push:
-    tags: ['v*']
+    tags:
+      - 'v*.*.*'
   workflow_dispatch:
 
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  publish:
+  pack:
+    name: Build & pack tarball
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 26
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - run: npm run smoke
+
+      - run: npm pack
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: package-tarball
+          path: '*.tgz'
+          if-no-files-found: error
+
+  publish:
+    name: Publish to npm (approval required)
+    needs: pack
+    runs-on: ubuntu-latest
+    environment: npm
     permissions:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v6
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          node-version: 24
+          name: package-tarball
+          path: .
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 26
           registry-url: https://registry.npmjs.org
-      - run: npm ci
-      - run: npm publish
+
+      - name: Publish the tarball
+        run: npm publish ./hieupth-nextstatic-*.tgz --provenance --access public

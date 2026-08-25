@@ -4,17 +4,27 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "next dev",
-    "build": "next build"
+    "build": "next build",
+    "prebuild": "./sync-lib.sh",
+    "predev": "./sync-lib.sh"
   },
   "dependencies": {
     "@hieupth/nextstatic": "file:..",
-    "next": "15.5.3",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "next": ">=15"
   },
   "devDependencies": {
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
+    "next": "^16.3.2",
     "typescript": "^5.9.2"
+  },
+  "overrides": {
+    "postcss": ">=8.5.23",
+    "sharp": ">=0.35.0"
+  },
+  "peerDependencies": {
+    "next": ">=15"
   }
 }

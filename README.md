@@ -25,8 +25,10 @@ path-contract verifier:
 
 ```bash
 cd examples && npm install && npm run dev          # browse the docs
-npm run verify:example                              # build @ BASE_PATH=/demo + assert
 ```
+
+Quality gates (static HTML + browser audit) run in CI via
+[`.github/workflows/publish.yml`](.github/workflows/publish.yml).
 
 ## License
 
@@ -45,7 +47,6 @@ This project is **dual-licensed** to suit different needs:
   obligations. A commercial license grants use without the copyleft
   requirements.
 
-To request a commercial license, contact **Hieu Pham** via
-[github.com/hieupth](https://github.com/hieupth).
+To request a commercial license, contact [Hieu Pham](https://github.com/hieupth).
 
 Copyright © 2025 [Hieu Pham](https://github.com/hieupth). All rights reserved.

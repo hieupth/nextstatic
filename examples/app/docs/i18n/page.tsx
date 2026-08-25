@@ -11,7 +11,7 @@ export default function I18nDocs() {
         each locale is prerendered as its own HTML; the provider receives the
         route param <strong>at build time</strong>, so every Link prefix is
         correct in the frozen output. This app ships <Link href="/en">/en</Link>{" "}
-        and <Link href="/vi">/vi</Link> exactly this way — <code>verify:example</code>{" "}
+        and <Link href="/vi">/vi</Link> exactly this way — <code>CI path-contract gate</code>{" "}
         asserts the locale prefixes exist in the static HTML itself.
       </p>
       <pre>{`// app/[locale]/page.tsx

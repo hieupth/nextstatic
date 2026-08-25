@@ -19,7 +19,7 @@ export default function DocsOverview() {
       </ul>
       <p>
         This site <em>is</em> the verification app: <code>npm run
-        verify:example</code> builds it with <code>BASE_PATH=/demo</code> and
+        CI path-contract gate</code> builds it with <code>BASE_PATH=/demo</code> and
         asserts every root-absolute URL carries the prefix.
       </p>
     </>

@@ -1,8 +1,15 @@
 import type { NextConfig } from "next";
 
-// The demo mirrors the README setup: one BASE_PATH feeds both Next
-// (basePath/assetPrefix for routes) and the lib (asset prefixes).
-const basePath = process.env.BASE_PATH ?? "";
+// Community-standard basePath inference for GitHub Pages:
+// BASE_PATH (explicit) → GITHUB_REPOSITORY (owner/repo → /repo) → ""
+// See: github.com/orgs/community/discussions/191018
+const inferBasePath = (): string => {
+  if (process.env.BASE_PATH !== undefined) return process.env.BASE_PATH;
+  if (process.env.GITHUB_REPOSITORY) return `/${process.env.GITHUB_REPOSITORY.split("/")[1]}`;
+  return "";
+};
+
+const basePath = inferBasePath();
 
 const nextConfig: NextConfig = {
   output: "export",
@@ -10,9 +17,8 @@ const nextConfig: NextConfig = {
   basePath,
   assetPrefix: basePath,
   images: { unoptimized: true },
-  // Inline BASE_PATH into the client bundle — without this the lib's
-  // process.env.BASE_PATH is undefined on the client and hydration
-  // mismatches the prerendered (prefixed) HTML.
+  // Inline into the client bundle so the lib's process.env.BASE_PATH
+  // matches the build-time value (prevents hydration mismatch).
   env: {
     BASE_PATH: basePath,
     NEXT_PUBLIC_BASE_PATH: basePath,

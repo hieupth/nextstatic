@@ -32,7 +32,7 @@ export default async function LocalePage({
               Switch to {locale === "en" ? "vi" : "en"} (plain util, no client state)
             </a>
           </li>
-          <li><Link href="/">Single-tree home (fallback pattern)</Link></li>
+          <li><a href={getLocalePath("/", "en")}>Single-tree home (locale-prefixed)</a></li>
         </ul>
       </main>
     </LocaleProvider>
