@@ -50,3 +50,4 @@ This project is **dual-licensed** to suit different needs:
 To request a commercial license, contact [Hieu Pham](https://github.com/hieupth).
 
 Copyright © 2025 [Hieu Pham](https://github.com/hieupth). All rights reserved.
+
