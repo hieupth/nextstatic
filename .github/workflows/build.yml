@@ -24,13 +24,22 @@ jobs:
       - name: Build lib
         run: npm ci && npm run build
 
+      # Regression gate: unit + fuzz + render-oracle suites must pass
+      # BEFORE anything is deployed. A red test stops the pipeline here.
+      - name: Test lib
+        run: npm test && npm run test:components
+
       - name: Build example
         run: |
           cd examples
-          npm install --no-frozen-lockfile
+          npm ci
           npm run build
         env:
           NODE_OPTIONS: --max-old-space-size=4096
+
+      # Security gate: fail on high+ advisories in either dependency tree.
+      - name: Audit dependencies
+        run: npm audit --audit-level=high && cd examples && npm audit --audit-level=high
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4

@@ -1,6 +1,6 @@
 # Publish to npm when a version tag is pushed.
-# Builds the tarball, deploys preview from it, then publishes behind
-# the protected `npm` environment (OIDC — no token secret needed).
+# Packs the tarball (build + smoke), uploads it as an artifact, then publishes
+# the protected `npm_publish_approval` environment (OIDC — no token secret needed).
 
 name: Publish
 
@@ -32,6 +32,10 @@ jobs:
 
       - run: npm run smoke
 
+      # Same regression gate as build.yml — a red test must stop the
+      # release before a tarball is ever packed.
+      - run: npm test && npm run test:components
+
       - run: npm pack
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -44,7 +48,7 @@ jobs:
     name: Publish to npm (approval required)
     needs: pack
     runs-on: ubuntu-latest
-    environment: npm
+    environment: npm_publish_approval
     permissions:
       contents: read
       id-token: write
