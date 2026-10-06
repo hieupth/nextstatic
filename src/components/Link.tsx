@@ -1,8 +1,11 @@
+// Locale-aware wrapper over next/link. Adds ONLY the locale segment —
+// Next itself applies basePath, so adding it here would double the prefix
+// (a bug this lib fixed; see getLocaleRoute).
 "use client";
 import NextLink from "next/link";
 import type { ComponentProps } from "react";
-import { getLocaleRoute } from "../utils/basepath";
-import { useLocale } from "../hooks/useLocale";
+import { getLocaleRoute } from "../utils/basepath.js";
+import { useLocale } from "../hooks/useLocale.js";
 
 // Props extending NextLink for type safety
 type Props = ComponentProps<typeof NextLink>;
@@ -13,17 +16,23 @@ type Props = ComponentProps<typeof NextLink>;
  * @param {string} locale - Current locale.
  * @returns {Props["href"]} Processed href.
  */
-// Locale-segment only: Next's Link applies basePath itself, so prefixing
-// it here would double it (BASE_PATH was baked twice before this fix).
-function withBase(href: Props["href"], locale: string): Props["href"] {
+// Locale-segment only — see the header for why basePath is NOT added here.
+function withBase(
+  href: Props["href"],
+  locale: string,
+  availableLocales: string[]
+): Props["href"] {
   if (typeof href === "string") {
     if (/^(https?:\/\/|mailto:|tel:|#)/i.test(href)) return href;
-    return getLocaleRoute(href, locale);
+    return getLocaleRoute(href, locale, availableLocales);
   }
 
   if (typeof href === "object" && href !== null && typeof href.pathname === "string") {
     if (locale && href.pathname.startsWith("/") && !href.pathname.startsWith("/_next/")) {
-      return { ...href, pathname: getLocaleRoute(href.pathname, locale) };
+      return {
+        ...href,
+        pathname: getLocaleRoute(href.pathname, locale, availableLocales),
+      };
     }
   }
 
@@ -45,6 +54,11 @@ function withBase(href: Props["href"], locale: string): Props["href"] {
  * @returns {React.ReactElement} Enhanced Link component.
  */
 export default function Link(props: ComponentProps<typeof NextLink>) {
-  const { locale } = useLocale();
-  return <NextLink {...props} href={withBase(props.href, locale)} />;
+  const { locale, availableLocales } = useLocale();
+  return (
+    <NextLink
+      {...props}
+      href={withBase(props.href, locale, availableLocales)}
+    />
+  );
 }

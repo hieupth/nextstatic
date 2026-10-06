@@ -1,7 +1,9 @@
+// basePath-aware wrapper over next/script. Prefixes string src so local
+// scripts load correctly under sub-directory hosting.
 "use client";
 import NextScript from "next/script";
 import type { ComponentProps } from "react";
-import { getPrefixPath } from "../utils/basepath";
+import { getPrefixPath } from "../utils/basepath.js";
 
 
 /**

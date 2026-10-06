@@ -1,26 +1,33 @@
 import type { UrlObject } from "url";
 
-// Base path from environment variables with fallbacks
-const basePath = process.env.BASE_PATH || process.env.NEXT_PUBLIC_BASE_PATH || "";
-
 // Cached base path for performance
 let cachedBasePath: string | null = null;
 
-// Regex patterns for URL processing
-const CSS_URL_REGEX = /url\(\s*(['"]?)\/(?!_next\/)/g;
 const PROTOCOL_RELATIVE_REGEX = /^\/\//;
 const ABSOLUTE_URL_REGEX = /^https?:\/\//;
 
 /**
- * Get normalized base path with caching.
+ * Get normalized base path with caching. The env value is re-read on every
+ * cache reset (resetPathCache), not frozen at module import.
  * @returns {string} Base path (e.g., "/my-app" or "").
  */
 export function getBasePath(): string {
   if (cachedBasePath === null) {
-    cachedBasePath = basePath.replace(/\/+$/, "");
+    const raw =
+      process.env.BASE_PATH || process.env.NEXT_PUBLIC_BASE_PATH || "";
+    cachedBasePath = raw.replace(/\/+$/, "");
   }
   return cachedBasePath;
 }
+
+// Join basePath and path by collapsing slashes ONLY at the join point —
+// a global // collapse would corrupt query strings and hashes
+// (e.g. "?to=https://x" must keep its double slash).
+function joinPrefix(basePath: string, path: string): string {
+  return `${basePath.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
+}
+
+const DEFAULT_LOCALE_SEGMENTS = ["en", "vi"];
 
 /**
  * Apply base path prefix to a path string.
@@ -38,7 +45,13 @@ export function getPrefixPath(path: string | null | undefined): string {
   const basePath = getBasePath();
   if (!basePath) return path;
 
-  return `${basePath}${path}`.replace(/\/{2,}/g, "/");
+  // Idempotent: an already-prefixed path passes through unchanged —
+  // compare the route part only, so "/base?x=1" counts as prefixed too.
+  const [route, search] = splitSearch(path);
+  if (route === basePath || route.startsWith(`${basePath}/`)) return path;
+  void search;
+
+  return joinPrefix(basePath, path);
 }
 
 /**
@@ -69,9 +82,12 @@ export function getPrefixCssUrl(value: string | null | undefined): string {
     const basePath = getBasePath();
     if (!basePath) return value;
 
+    // Idempotent: don't re-prefix a url() that already carries basePath.
+    const esc = basePath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(`url\\(\\s*(['\"]?)\\/(?!\\/)(?!_next\\/)(?!${esc.replace(/^\//, "")}\\/)`, "gi");
     return value.replace(
-      CSS_URL_REGEX,
-      (_match, quote) => `url(${quote}${basePath}/`
+      re,
+      (match, quote) => `${match.slice(0, 3)}(${quote}${basePath}/`
     );
   } catch (error) {
     console.warn('Error processing CSS URL:', error);
@@ -86,87 +102,137 @@ export function resetPathCache(): void {
   cachedBasePath = null;
 }
 
+/** Split path into [pathname, search+hash] so slash handling never touches
+ * query strings or hashes. */
+function splitSearch(path: string): [string, string] {
+  const m = path.match(/[?#]/);
+  if (!m || m.index === undefined) return [path, ""];
+  return [path.slice(0, m.index), path.slice(m.index)];
+}
+
 /**
  * Parse locale from URL path and return clean path.
- * Handles both basePath and locale in URL structure.
+ * Handles both basePath and locale in URL structure — the basePath may be
+ * multi-segment (e.g. "/proxy/4173/demo"), so the whole prefix is stripped
+ * before reading the locale segment.
  * @param {string} path - URL path to parse.
- * @param {string[]} availableLocales - Available locales.
+ * @param {string[]} availableLocales - Locales recognized as a leading
+ *   segment; defaults to ["en", "vi"] — pass your app's list to change it.
  * @returns {{path: string, locale?: string}} Clean path and detected locale.
  */
 export function parseLocaleFromPath(path: string, availableLocales: string[] = ["en", "vi"]): { path: string; locale?: string } {
   if (!path || typeof path !== 'string') return { path: "", locale: undefined };
 
-  const pathParts = path.replace(/^\/|\/$/g, "").split("/");
+  // Queries/hashes are not path segments — "/vi?x=1" still detects "vi".
+  const search = splitSearch(path)[1];
+  let rest = splitSearch(path)[0] || "/";
   const basePath = getBasePath();
-  const basePathParts = basePath ? basePath.replace(/^\/|\/$/g, "").split("/") : [];
-
-  let cleanPath = path;
-  let detectedLocale: string | undefined;
-
-  if (basePathParts.length > 0) {
-    const basePathIndex = pathParts.findIndex(part => part === basePathParts[0]);
-    if (basePathIndex !== -1 && pathParts[basePathIndex + 1] && availableLocales.includes(pathParts[basePathIndex + 1])) {
-      detectedLocale = pathParts[basePathIndex + 1];
-      cleanPath = "/" + pathParts.slice(basePathIndex + 2).join("/");
-    }
-  } else {
-    if (pathParts[0] && availableLocales.includes(pathParts[0])) {
-      detectedLocale = pathParts[0];
-      cleanPath = "/" + pathParts.slice(1).join("/");
+  if (basePath) {
+    if (rest === basePath) {
+      rest = "/";
+    } else if (rest.startsWith(`${basePath}/`)) {
+      rest = rest.slice(basePath.length);
     }
   }
 
-  cleanPath = cleanPath === "" ? "" : cleanPath.startsWith("/") ? cleanPath : `/${cleanPath}`;
-  return { path: cleanPath, locale: detectedLocale };
+  // Collapse repeated internal slashes ("/a//b" → "/a/b") before splitting.
+  rest = rest.replace(/\/{2,}/g, "/");
+  const pathParts = rest.replace(/^\/|\/$/g, "").split("/");
+  let detectedLocale: string | undefined;
+
+  if (pathParts[0] && availableLocales.includes(pathParts[0])) {
+    detectedLocale = pathParts[0];
+    rest = "/" + pathParts.slice(1).join("/");
+  }
+
+  let cleanPath = rest === "" ? "" : rest.startsWith("/") ? rest : `/${rest}`;
+  return { path: cleanPath + search, locale: detectedLocale };
 }
 
-/**
- * Create path with basePath and locale prefix.
- * Core function for i18n routing in static Next.js apps.
- * @param {string} path - Application path to prefix.
- * @param {string} locale - Locale code.
- * @returns {string} Complete path with basePath and locale.
- */
 /**
  * Locale-prefix a route path WITHOUT the basePath — for hrefs handed to
  * Next primitives (next/link, router.push): Next applies basePath itself,
  * so including it here would double the prefix.
  * @param path - Route path (e.g. "/about"). External/anchor/_next paths pass through.
  * @param locale - Locale segment (e.g. "vi"). Empty string returns the path unchanged.
+ * @param {string[]} availableLocales - Locales recognized as a leading
+ *   segment; defaults to ["en", "vi"] — pass your app's list to change it.
  * @returns Path with locale segment only (e.g. "/vi/about").
  */
-export function getLocaleRoute(path: string, locale: string): string {
+export function getLocaleRoute(path: string, locale: string, availableLocales: string[] = DEFAULT_LOCALE_SEGMENTS): string {
   if (!path || typeof path !== 'string') return '';
   if (!path.startsWith("/") || path.startsWith("/_next/") || PROTOCOL_RELATIVE_REGEX.test(path) || ABSOLUTE_URL_REGEX.test(path)) {
     return path;
   }
   if (!locale) return path;
-  const cleanPath = path.replace(/^\/+/, "");
-  return `/${locale}/${cleanPath}`.replace(/\/{2,}/g, "/");
+  const [route0, search] = splitSearch(path);
+  // Normalize inputs that already carry the basePath (locale-only output —
+  // Next adds basePath itself).
+  const bp = getBasePath();
+  let route = route0;
+  if (bp && (route === bp || route.startsWith(`${bp}/`))) {
+    route = route.slice(bp.length) || "/";
+  }
+  // A leading KNOWN locale means the href is already locale-addressed:
+  // keep it (idempotent, and preserves intent — "/ja/about" under an en
+  // page must not become "/en/about" nor stack). Only locale-free paths
+  // gain the context locale.
+  const seg = route.replace(/^\/+/, "").split("/")[0];
+  if (seg && (seg === locale || availableLocales.includes(seg))) {
+    // Already locale-addressed — return the normalized (bp-stripped) route,
+    // not the original input.
+    return `${route}${search}`;
+  }
+  return `/${locale}/${route.replace(/^\/+/, "")}${search}`;
 }
 
-export function getLocalePath(path: string | null | undefined, locale: string): string {
+/**
+ * Create a path with basePath AND locale prefix — the full URL-usable form
+ * for raw surfaces (plain <a>, img src) where neither Next nor a provider
+ * adds anything.
+ * @param path - Application path (e.g. "/about"). External/anchor paths pass through.
+ * @param locale - Locale segment (e.g. "vi"). Empty string adds basePath only.
+ * @param {string[]} availableLocales - Locales recognized as a leading
+ *   segment; defaults to ["en", "vi"] — pass your app's list to change it.
+ * @returns Full path (e.g. "/my-app/vi/about").
+ */
+export function getLocalePath(path: string | null | undefined, locale: string, availableLocales: string[] = DEFAULT_LOCALE_SEGMENTS): string {
   if (!path || typeof path !== 'string') return '';
 
   if (!path.startsWith("/") || path.startsWith("/_next/") || PROTOCOL_RELATIVE_REGEX.test(path) || ABSOLUTE_URL_REGEX.test(path)) {
     return path;
   }
 
-  const basePath = getBasePath();
-  const cleanPath = path.replace(/^\/+/, "");
-  const localePrefix = locale ? `/${locale}` : "";
+  // locale "" is EXACTLY getPrefixPath — delegate so it inherits the
+  // pass-through guard (already-prefixed inputs and queries unchanged).
+  if (!locale) return getPrefixPath(path);
 
-  if (basePath) {
-    return `${basePath}${localePrefix}/${cleanPath}`.replace(/\/{2,}/g, "/");
+  const [route0, search] = splitSearch(path);
+  // Normalize: strip a leading basePath (idempotence with getPrefixPath —
+  // "base?x=1" and already-prefixed inputs pass through unchanged).
+  const bp = getBasePath();
+  let route = route0;
+  if (bp && (route === bp || route.startsWith(`${bp}/`))) {
+    route = route.slice(bp.length) || "/";
   }
-
-  return `${localePrefix}/${cleanPath}`.replace(/\/{2,}/g, "/");
+  // A leading KNOWN locale wins: the path is already locale-addressed, so
+  // rebuild under THAT locale (intent preserved). Locale-free paths use
+  // the requested locale; "" stays exactly equivalent to getPrefixPath.
+  const seg = route.replace(/^\/+/, "").split("/")[0];
+  const effective =
+    seg && (seg === locale || availableLocales.includes(seg)) ? seg : locale;
+  if (seg === effective) {
+    route = route.slice(seg.length + 1) || "/";
+  }
+  const localePrefix = effective ? `/${effective}` : "";
+  return joinPrefix(`${bp}${localePrefix}`, `${route}${search}`);
 }
 
 /**
  * Detect current locale from browser URL path.
  * Works client-side for consistent locale detection.
- * @param {string[]} availableLocales - Available locales.
+ * @param {string[]} availableLocales - Locales recognized as a leading
+ *   segment; defaults to ["en", "vi"] — pass your app's list to change it.
  * @returns {string | undefined} Detected locale or undefined.
  */
 export function getCurrentLocale(availableLocales: string[] = ["en", "vi"]): string | undefined {

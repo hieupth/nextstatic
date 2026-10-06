@@ -1,7 +1,9 @@
+// basePath-aware raw <a>. For surfaces Next does not touch (plain anchors,
+// markdown output): prefixes internal hrefs, skips external/anchor/mailto.
 "use client";
 
-import type { AnchorHTMLAttributes } from "react";
-import { getPrefixPath } from "../utils/basepath";
+import type { ComponentProps } from "react";
+import { getPrefixPath } from "../utils/basepath.js";
 
 
 /**
@@ -21,6 +23,6 @@ function withBase(href?: string): string | undefined {
  * Drop-in replacement for HTML anchor tag that automatically handles basePath for sub-path hosting.
  * Ensures internal navigation works correctly while preserving external links and special protocols.
  */
-export default function Anchor(props: AnchorHTMLAttributes<HTMLAnchorElement>) {
+export default function Anchor(props: ComponentProps<"a">) {
   return <a {...props} href={withBase(props.href)} />;
 }

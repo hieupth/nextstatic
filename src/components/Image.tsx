@@ -1,7 +1,9 @@
+// basePath-aware wrapper over next/image. Prefixes string src; StaticImport
+// objects and data:/blob:/https: sources pass through untouched.
 "use client";
 import NextImage from "next/image";
 import type { ComponentProps } from "react";
-import { getPrefixPath } from "../utils/basepath";
+import { getPrefixPath } from "../utils/basepath.js";
 
 
 /**
@@ -12,7 +14,7 @@ import { getPrefixPath } from "../utils/basepath";
  * @param src - Image source URL or StaticImport.
  * @returns Processed source with basePath applied if applicable.
  */
-function withBase(src: string | any): string {
+function withBase(src: ComponentProps<typeof NextImage>["src"]): ComponentProps<typeof NextImage>["src"] {
   if (typeof src !== "string") return src;
   if (/^(https?:\/\/|data:|blob:)/i.test(src)) return src;
   return getPrefixPath(src);

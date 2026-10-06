@@ -1,9 +1,12 @@
+// Background-image div: applies basePath to a backgroundImage prop or
+// url() values inside style.background/backgroundImage — the CSS-in-JS case
+// that Tailwind classes and plain CSS files cannot reach.
 "use client";
 
-import type { HTMLAttributes, CSSProperties } from "react";
-import { getPrefixCssUrl } from "../utils/basepath";
+import type { ComponentProps, CSSProperties } from "react";
+import { getPrefixCssUrl } from "../utils/basepath.js";
 
-type Props = HTMLAttributes<HTMLDivElement> & {
+type Props = ComponentProps<"div"> & {
   /**
    * Background image URL or CSS background property value.
    * Can be a simple URL string or full CSS background value.
@@ -25,7 +28,7 @@ function withBase(bg?: string): string | undefined {
   if (!bg || typeof bg !== "string") return bg;
   
   // If it's already a CSS url() function, process it
-  if (bg.includes("url(")) {
+  if (bg.toLowerCase().includes("url(")) {
     return getPrefixCssUrl(bg);
   }
   
@@ -63,7 +66,7 @@ function withBaseStyle(style?: CSSProperties): CSSProperties | undefined {
  * Div component that automatically handles basePath for background images.
  * Supports both backgroundImage prop and style.backgroundImage with automatic path prefixing.
  */
-export default function Background({ backgroundImage, style, ...props }: Props) {
+export default function Bg({ backgroundImage, style, ...props }: Props) {
   const processedStyle = withBaseStyle(style);
   
   // If backgroundImage prop is provided, merge it with style
