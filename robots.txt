@@ -1,0 +1,4 @@
+User-Agent: *
+Allow: /
+
+Sitemap: https://hieupth.github.io/nextstatic/sitemap.xml

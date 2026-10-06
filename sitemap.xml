@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<url>
+<loc>https://hieupth.github.io/nextstatic/en/</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://hieupth.github.io/nextstatic/en/" />
+<xhtml:link rel="alternate" hreflang="vi" href="https://hieupth.github.io/nextstatic/vi/" />
+</url>
+<url>
+<loc>https://hieupth.github.io/nextstatic/en/about/</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://hieupth.github.io/nextstatic/en/about/" />
+<xhtml:link rel="alternate" hreflang="vi" href="https://hieupth.github.io/nextstatic/vi/about/" />
+</url>
+<url>
+<loc>https://hieupth.github.io/nextstatic/en/docs/</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://hieupth.github.io/nextstatic/en/docs/" />
+<xhtml:link rel="alternate" hreflang="vi" href="https://hieupth.github.io/nextstatic/vi/docs/" />
+</url>
+<url>
+<loc>https://hieupth.github.io/nextstatic/en/docs/setup/</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://hieupth.github.io/nextstatic/en/docs/setup/" />
+<xhtml:link rel="alternate" hreflang="vi" href="https://hieupth.github.io/nextstatic/vi/docs/setup/" />
+</url>
+<url>
+<loc>https://hieupth.github.io/nextstatic/en/docs/i18n/</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://hieupth.github.io/nextstatic/en/docs/i18n/" />
+<xhtml:link rel="alternate" hreflang="vi" href="https://hieupth.github.io/nextstatic/vi/docs/i18n/" />
+</url>
+<url>
+<loc>https://hieupth.github.io/nextstatic/en/docs/components/</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://hieupth.github.io/nextstatic/en/docs/components/" />
+<xhtml:link rel="alternate" hreflang="vi" href="https://hieupth.github.io/nextstatic/vi/docs/components/" />
+</url>
+<url>
+<loc>https://hieupth.github.io/nextstatic/en/docs/hooks/</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://hieupth.github.io/nextstatic/en/docs/hooks/" />
+<xhtml:link rel="alternate" hreflang="vi" href="https://hieupth.github.io/nextstatic/vi/docs/hooks/" />
+</url>
+<url>
+<loc>https://hieupth.github.io/nextstatic/en/docs/utils/</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://hieupth.github.io/nextstatic/en/docs/utils/" />
+<xhtml:link rel="alternate" hreflang="vi" href="https://hieupth.github.io/nextstatic/vi/docs/utils/" />
+</url>
+<url>
+<loc>https://hieupth.github.io/nextstatic/vi/</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://hieupth.github.io/nextstatic/en/" />
+<xhtml:link rel="alternate" hreflang="vi" href="https://hieupth.github.io/nextstatic/vi/" />
+</url>
+<url>
+<loc>https://hieupth.github.io/nextstatic/vi/about/</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://hieupth.github.io/nextstatic/en/about/" />
+<xhtml:link rel="alternate" hreflang="vi" href="https://hieupth.github.io/nextstatic/vi/about/" />
+</url>
+<url>
+<loc>https://hieupth.github.io/nextstatic/vi/docs/</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://hieupth.github.io/nextstatic/en/docs/" />
+<xhtml:link rel="alternate" hreflang="vi" href="https://hieupth.github.io/nextstatic/vi/docs/" />
+</url>
+<url>
+<loc>https://hieupth.github.io/nextstatic/vi/docs/setup/</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://hieupth.github.io/nextstatic/en/docs/setup/" />
+<xhtml:link rel="alternate" hreflang="vi" href="https://hieupth.github.io/nextstatic/vi/docs/setup/" />
+</url>
+<url>
+<loc>https://hieupth.github.io/nextstatic/vi/docs/i18n/</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://hieupth.github.io/nextstatic/en/docs/i18n/" />
+<xhtml:link rel="alternate" hreflang="vi" href="https://hieupth.github.io/nextstatic/vi/docs/i18n/" />
+</url>
+<url>
+<loc>https://hieupth.github.io/nextstatic/vi/docs/components/</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://hieupth.github.io/nextstatic/en/docs/components/" />
+<xhtml:link rel="alternate" hreflang="vi" href="https://hieupth.github.io/nextstatic/vi/docs/components/" />
+</url>
+<url>
+<loc>https://hieupth.github.io/nextstatic/vi/docs/hooks/</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://hieupth.github.io/nextstatic/en/docs/hooks/" />
+<xhtml:link rel="alternate" hreflang="vi" href="https://hieupth.github.io/nextstatic/vi/docs/hooks/" />
+</url>
+<url>
+<loc>https://hieupth.github.io/nextstatic/vi/docs/utils/</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://hieupth.github.io/nextstatic/en/docs/utils/" />
+<xhtml:link rel="alternate" hreflang="vi" href="https://hieupth.github.io/nextstatic/vi/docs/utils/" />
+</url>
+</urlset>
