@@ -12,19 +12,21 @@
     "@hieupth/nextstatic": "file:..",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": ">=15"
+    "next": ">=16.3"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
-    "next": "^16.3.2",
+    "next": "^16.3.7",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5.9.2"
   },
   "overrides": {
     "postcss": ">=8.5.23",
-    "sharp": ">=0.35.0"
+    "sharp": ">=0.35.4"
   },
   "peerDependencies": {
-    "next": ">=15"
+    "next": ">=16.3"
   }
 }

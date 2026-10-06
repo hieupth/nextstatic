@@ -1,6 +1,22 @@
-import { Link } from "@hieupth/nextstatic";
-import { t, type Locale } from "../../lib/i18n";
-import { Demos } from "./demos";
+// Locale home: thin wrapper over the shared <Home> (also served at /).
+
+import type { Metadata } from "next";
+import { pageAlternates, pageOgUrl } from "../../lib/site";
+import type { Locale } from "../../lib/i18n";
+import { Home } from "../home";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = (await params).locale as Locale;
+  return {
+    title: "nextstatic",
+    alternates: pageAlternates(locale, "/"),
+    openGraph: { url: pageOgUrl(locale, "/") },
+  };
+}
 
 export default async function LocaleHome({
   params,
@@ -9,17 +25,5 @@ export default async function LocaleHome({
 }) {
   const { locale: raw } = await params;
   const locale = raw as Locale;
-
-  return (
-    <>
-      <h1>{t(locale, "home.title")}</h1>
-      <p>{t(locale, "home.description")}</p>
-      <nav>
-        <Link href={`/${locale}/docs`}>📚 {t(locale, "nav.docs")}</Link>
-        {" · "}
-        <Link href={`/${locale}/about`}>{t(locale, "nav.about")}</Link>
-      </nav>
-      <Demos locale={locale} />
-    </>
-  );
+  return <Home locale={locale} />;
 }
