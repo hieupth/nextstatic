@@ -9,13 +9,13 @@ export {
   getLocalePath,
   getLocaleRoute,
   getCurrentLocale,
-} from "./utils/basepath";
+} from "./utils/basepath.js";
 
 // Type exports for convenience
 export type { UrlObject } from "url";
 
 // Component exports
-export * from "./components";
+export * from "./components/index.js";
 
 // Hook exports
-export * from "./hooks";
+export * from "./hooks/index.js";

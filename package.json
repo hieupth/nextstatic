@@ -1,8 +1,8 @@
 {
   "name": "@hieupth/nextstatic",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Comprehensive toolkit for Next.js path management in static exports.",
-  "homepage": "https://github.com/hieupth/next-static-path#readme",
+  "homepage": "https://github.com/hieupth/nextstatic#readme",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -21,27 +21,29 @@
     "dist"
   ],
   "bugs": {
-    "url": "https://github.com/hieupth/next-static-path/issues"
+    "url": "https://github.com/hieupth/nextstatic/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hieupth/next-static-path.git"
+    "url": "git+https://github.com/hieupth/nextstatic.git"
   },
-  "license": "AGPL-3.0, Commercial license required",
+  "license": "SEE LICENSE IN LICENSE",
   "publishConfig": {
     "access": "public"
   },
   "author": "Hieu Pham",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test test/*.test.mjs",
     "build": "rm -rf dist && tsc -p tsconfig.build.json",
     "prepack": "rm -rf dist && tsc -p tsconfig.build.json",
     "prepare": "rm -rf dist && tsc -p tsconfig.build.json",
-    "smoke": "npx --yes esbuild --bundle dist/index.js --outfile=/dev/null --external:react --external:react-dom --external:next --external:next/* && npx --yes esbuild --bundle dist/components/index.js --outfile=/dev/null --external:react --external:react-dom --external:next --external:next/*"
+    "smoke": "npx --yes esbuild --bundle dist/index.js --outfile=/dev/null --external:react --external:react-dom --external:next --external:next/* && npx --yes esbuild --bundle dist/components/index.js --outfile=/dev/null --external:react --external:react-dom --external:next --external:next/*",
+    "test:components": "node --test test/components.test.mjs",
+    "redteam": "node tools/mutation.mjs"
   },
   "peerDependencies": {
-    "next": "latest",
+    "next": ">=16.3",
     "react": "^18.2.0 || ^19.0.0",
     "react-dom": "^18.2.0 || ^19.0.0"
   },
@@ -49,13 +51,11 @@
     "@types/node": "^24",
     "@types/react": "^18.2.0 || ^19.0.0",
     "@types/react-dom": "^18.2.0 || ^19.0.0",
-    "next": "latest",
+    "esbuild": "^0.28.2",
+    "next": "^16.3.7",
     "react": "^18.2.0 || ^19.0.0",
     "react-dom": "^18.2.0 || ^19.0.0",
     "typescript": "^5"
-  },
-  "dependencies": {
-    "next": "latest"
   },
   "engines": {
     "node": ">=22"

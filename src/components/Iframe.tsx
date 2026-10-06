@@ -1,7 +1,8 @@
+// basePath-aware <iframe>. Prefixes internal src; external embeds untouched.
 "use client";
 
-import type { IframeHTMLAttributes } from "react";
-import { getPrefixPath } from "../utils/basepath";
+import type { ComponentProps } from "react";
+import { getPrefixPath } from "../utils/basepath.js";
 
 
 /**
@@ -23,6 +24,6 @@ function withBase(src?: string): string | undefined {
  * Processes src attribute for internal content while preserving external iframe sources.
  * Maintains all iframe security and functionality features.
  */
-export default function Iframe(props: IframeHTMLAttributes<HTMLIFrameElement>) {
+export default function Iframe(props: ComponentProps<"iframe">) {
   return <iframe {...props} src={withBase(props.src)} />;
 }

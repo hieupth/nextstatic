@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { getPrefixPath, getBasePath } from "../utils/basepath";
+import { getPrefixPath, getBasePath } from "../utils/basepath.js";
 
 /**
  * React hook for getting asset paths with automatic basePath handling.
@@ -82,7 +82,10 @@ export function useAssetPath() {
  * @returns Full path with basePath applied.
  */
 export function useAsset(path: string): string {
-  return useMemo(() => getPrefixPath(path), [path]);
+  // Keyed on basePath too: resetPathCache + env change must not serve
+  // stale prefixes.
+  const basePath = getBasePath();
+  return useMemo(() => getPrefixPath(path), [path, basePath]);
 }
 
 /**
@@ -92,8 +95,12 @@ export function useAsset(path: string): string {
  * @returns Array of full paths with basePath applied.
  */
 export function useAssets(paths: string[]): string[] {
-  return useMemo(() => 
-    paths.map(path => getPrefixPath(path)), 
-    [paths]
+  // Memoize on content, not array identity — inline array literals at the
+  // call site would re-map on every render otherwise.
+  const key = paths.join("\u0000");
+  const basePath = getBasePath();
+  return useMemo(
+    () => (paths.length ? key.split("\u0000").map(path => getPrefixPath(path)) : []),
+    [key, basePath]
   );
 }

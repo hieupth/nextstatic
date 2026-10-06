@@ -1,5 +1,6 @@
 "use client";
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import { getCurrentLocale } from "../utils/basepath.js";
 
 // Locale type for type safety
 type Locale = string;
@@ -16,7 +17,30 @@ interface LocaleProviderProps {
   children: React.ReactNode;
   defaultLocale?: Locale;
   availableLocales?: Locale[];
+  /** Persist the locale to localStorage. Set false for fixed-locale trees
+   * (e.g. a pre-locale landing page) so a stored value can never retarget
+   * their links after mount. */
+  persist?: boolean;
 }
+
+// Module-level default so the effect dependency identity is stable across
+// renders (a default parameter would create a new array every render and
+// re-fire the mount effect, silently reverting setLocale calls).
+const DEFAULT_LOCALES: Locale[] = ["en", "vi"];
+const STORAGE_KEY = "nextstatic:locale";
+const LEGACY_STORAGE_KEY = "preferred-locale";
+
+// localStorage can THROW on access (blocked site data, some webviews) —
+// never let storage crash the tree.
+const readStorage = (k: string): string | null => {
+  try { return localStorage.getItem(k); } catch { return null; }
+};
+const writeStorage = (k: string, v: string) => {
+  try { localStorage.setItem(k, v); } catch { /* blocked */ }
+};
+const removeStorage = (k: string) => {
+  try { localStorage.removeItem(k); } catch { /* blocked */ }
+};
 
 /**
  * Provider for internationalization with URL detection and localStorage persistence.
@@ -34,50 +58,61 @@ interface LocaleProviderProps {
 export function LocaleProvider({
   children,
   defaultLocale = "en",
-  availableLocales = ["en", "vi"],
+  availableLocales = DEFAULT_LOCALES,
+  persist = true,
 }: LocaleProviderProps) {
   const [locale, setLocaleState] = useState<Locale>(defaultLocale);
+  // Stable dependency + stable identity: compare by content, not array.
+  const localesKey = availableLocales.join(",");
+  const locales = useMemo(() => localesKey.split(",").filter(Boolean), [localesKey]);
 
-  // Detect locale from URL on mount
+  // Detect locale from URL on mount (basePath-aware, incl. multi-segment
+  // base paths — see parseLocaleFromPath).
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const path = window.location.pathname;
-      const pathParts = path.split("/").filter(Boolean);
-
-      const basePath = process.env.BASE_PATH || process.env.NEXT_PUBLIC_BASE_PATH || "";
-      const basePathParts = basePath.split("/").filter(Boolean);
-      let potentialLocale = "";
-
-      if (basePathParts.length > 0) {
-        const basePathIndex = pathParts.findIndex(part => part === basePathParts[0]);
-        if (basePathIndex !== -1 && pathParts[basePathIndex + 1]) {
-          potentialLocale = pathParts[basePathIndex + 1];
+      const detected = getCurrentLocale(locales);
+      if (detected) {
+        setLocaleState(detected);
+      } else if (persist) {
+        let savedLocale = readStorage(STORAGE_KEY);
+        // One-time migration from the pre-namespaced key.
+        if (!savedLocale) {
+          savedLocale = readStorage(LEGACY_STORAGE_KEY);
+          if (savedLocale) {
+            removeStorage(LEGACY_STORAGE_KEY);
+          }
         }
-      } else {
-        potentialLocale = pathParts[0];
-      }
-
-      if (potentialLocale && availableLocales.includes(potentialLocale)) {
-        setLocaleState(potentialLocale);
-      } else {
-        const savedLocale = localStorage.getItem("preferred-locale");
-        if (savedLocale && availableLocales.includes(savedLocale)) {
+        if (savedLocale && locales.includes(savedLocale)) {
           setLocaleState(savedLocale);
+          if (readStorage(STORAGE_KEY) !== savedLocale) {
+            writeStorage(STORAGE_KEY, savedLocale);
+          }
         }
       }
     }
-  }, [availableLocales]);
+  }, [localesKey, persist]);
 
-  // Set locale and persist to localStorage
-  const setLocale = (newLocale: Locale) => {
+  // Set locale and persist to localStorage (only valid locales are stored).
+  // useCallback + useMemo keep the context value referentially stable so
+  // memoized consumers don't re-render on every provider render.
+  const setLocale = useCallback((newLocale: Locale) => {
     setLocaleState(newLocale);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("preferred-locale", newLocale);
+    if (
+      persist &&
+      typeof window !== "undefined" &&
+      locales.includes(newLocale)
+    ) {
+      writeStorage(STORAGE_KEY, newLocale);
     }
-  };
+  }, [localesKey, persist]);
+
+  const contextValue = useMemo(
+    () => ({ locale, setLocale, availableLocales: locales }),
+    [locale, setLocale, locales]
+  );
 
   return (
-    <LocaleContext.Provider value={{ locale, setLocale, availableLocales }}>
+    <LocaleContext.Provider value={contextValue}>
       {children}
     </LocaleContext.Provider>
   );
